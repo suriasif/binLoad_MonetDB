@@ -1,0 +1,88 @@
+<?xml-stylesheet type='text/xsl' href='dfd.xsl'?>
+<logic>
+ <input fieldSep="," recordSep="\r\n">
+    <field name="TinyVal"     type="TinyInt"        nullable="false" />   
+    <field name="TinyNull"    type="TinyInt"        nullable="true"  />   
+    <field name="IntVal"      type="Int"            nullable="false" />   
+    <field name="IntNull"     type="Int"            nullable="true"  />   
+    <field name="LongVal"     type="Long"           nullable="false" />   
+    <field name="LongNull"    type="Long"           nullable="true"  />   
+    <field name="DoubleVal"   type="Double"         nullable="false"  precision="15" scale="3"/>   
+    <field name="DoubleNull"  type="Double"         nullable="true"   precision="15" scale="3"/>   
+    <field name="TimeVal"     type="TimeStampODBC"  nullable="false" />   
+    <field name="TimeNull"    type="TimeStampODBC"  nullable="true"  />   
+    <field name="CharVal"     type="String"         nullable="false" />   
+    <field name="CharNull"    type="String"         nullable="true"  />
+ </input>
+ <extented>
+    <field name="Mcc"         type="SmallInt"       nullable="true"  />
+    <field name="Mnc"         type="SmallInt"       nullable="true"  />
+    <field name="Lac"         type="SmallInt"       nullable="true"  />
+    <field name="CI"          type="Int"            nullable="true"  />
+ </extented>
+ <output>
+    <field name="TinyVal"     />   
+    <field name="TinyNull"    />   
+    <field name="IntVal"      />   
+    <field name="IntNull"     />   
+    <field name="LongVal"     />   
+    <field name="LongNull"    />   
+    <field name="DoubleVal"   />   
+    <field name="DoubleNull"  />   
+    <field name="TimeVal"     />   
+    <field name="TimeNull"    />   
+    <field name="CharVal"     />   
+    <field name="Mcc"         />
+    <field name="Mnc"         />
+    <field name="Lac"         />
+    <field name="CI"          />
+ </output>
+ <local>
+   <field name="len" type="Int"     value="0" />
+   <field name="slice_1" type="Int" value="-2147483648" />
+   <field name="slice_2" type="Int" value="-2147483648" />
+   <field name="slice_3" type="Int" value="" />
+   <field name="tmp" type="String"  value="Hello Local" max="50"/>
+ </local>
+ <code>
+  <rule>
+   <function name="StringLength">
+     <param name="len"     direction="O" type="Int"    storage="Local" />
+     <param name="CharVal" direction="I" type="String" storage="Bat" />
+   </function>
+  </rule>
+  <rule condition="len==6">
+   <function name="AssignValue">
+     <param name="slice_1" direction="O" type="Int" storage="Local" />
+     <param                direction="I" type="Int" storage="Value">3</param>
+   </function>
+   <function name="AssignValue">
+     <param name="slice_3" direction="O" type="Int" storage="Local" />
+     <param                direction="I" type="Int" storage="Value">4</param>
+   </function>
+   <!--  if len == 6  -->
+   <function name="AssignValue" condition="true">
+     <param name="slice_2" direction="O" type="Int" storage="Local" />
+     <param                direction="I" type="Int" storage="Value">3</param>
+   </function>
+   <!--  Else -->
+   <function name="AssignValue" condition="false">
+     <param name="slice_2" direction="O" type="Int" storage="Local" />
+     <param                direction="I" type="Int" storage="Value">2</param>
+   </function>
+  </rule>
+  <rule>
+   <function name="StringSlice">
+     <param name="CharNull" direction="I" type="Int"    storage="Bat" />
+     <param name="slice_1"  direction="I" type="Int"    storage="Local" />
+     <param name="slice_2"  direction="I" type="Int"    storage="Local" />
+     <param name="slice_3"  direction="I" type="Int"    storage="Local" />
+     <param                 direction="I" type="Int"    storage="Value">6</param>
+     <param name="Mcc"      direction="O" type="Int"    storage="Bat" />
+     <param name="Mnc"      direction="O" type="Int"    storage="Bat" />
+     <param name="Lac"      direction="O" type="Int"    storage="Bat" />
+     <param name="CI"       direction="O" type="Int"    storage="Bat" />
+   </function>
+  </rule>
+ </code>
+</logic>

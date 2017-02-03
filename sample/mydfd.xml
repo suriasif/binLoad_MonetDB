@@ -1,0 +1,106 @@
+<?xml-stylesheet type='text/xsl' href='dfd.xsl'?>
+<logic>
+ <input fieldSep="," recordSep="\r\n">
+    <field name="eTime"                     type="TimeStampODBC"    nullable="true"  />
+    <field name="MSISDN"                    type="String"           nullable="true"  max="16"  />
+    <field name="MCCMNC"                    type="String"           nullable="true"  max="6"   />
+    <field name="UEIP"                      type="IntIP"            nullable="true"  />
+    <!--field name="UEIP"                      type="String"           nullable="true"  max="20" / -->
+    <field name="UEIPv6"                    type="String"           nullable="true"  max="64"  />
+    <field name="UnderControl"              type="TinyInt"          nullable="true"  />
+    <field name="CGI"                       type="String"           nullable="true"  max="16"  />
+ </input>
+ <extented>
+    <field name="FileID"          type="Long"           nullable="true"  />
+    <field name="LineID"          type="Long"           nullable="true"  />
+    <field name="Mcc"             type="SmallInt"       nullable="true"  />
+    <field name="Mnc"             type="SmallInt"       nullable="true"  />
+    <field name="Cgi_Mcc"         type="SmallInt"       nullable="true"  />
+    <field name="Cgi_Mnc"         type="SmallInt"       nullable="true"  />
+    <field name="Cgi_Lac"         type="SmallInt"       nullable="true"  />
+    <field name="Cgi_CI"          type="Long"           nullable="true"  />
+    <field name="Ueipv6Inet4"     type="IntIP"          nullable="true"  />
+    <!-- field name="Ueipv6Inet4"     type="String"         nullable="true"  max="20" / -->
+    <field name="Ueipv6Low"       type="Long"           nullable="true"  />
+    <field name="Ueipv6High"      type="Long"           nullable="true"  />
+ </extented>
+<output tableName="mytable" baseDir="/opt/monetData/">
+    <field name="FileID"                   />
+    <field name="LineID"                   />
+    <field name="eTime"                    />
+    <field name="MSISDN"                   />
+    <field name="Mcc"                      />
+    <field name="Mnc"                      />
+    <field name="UEIP"                     />
+    <field name="Ueipv6Low"                />
+    <field name="Ueipv6High"               />
+    <field name="Ueipv6Inet4"              />
+    <field name="UnderControl"             />
+    <field name="Cgi_Mcc"                  />
+    <field name="Cgi_Mnc"                  />
+    <field name="Cgi_Lac"                  />
+    <field name="Cgi_CI"                   />
+</output>
+ <local>
+   <field name="MccMncLen" type="Int"     value="5" />
+   <field name="MncLen"    type="Int"     value="2" />
+ </local>
+ <code>
+  <rule>
+   <function name="FileLineID">
+     <param name="LineID" direction="O" type="Long"   storage="Bat" />
+   </function>
+   <function name="FileExtension">
+     <param name="FileID" direction="O" type="Long"   storage="Bat" />
+   </function>
+  </rule>
+  <rule>
+   <function name="IPv6ToLongLong">
+     <param name="UEIPv6"     direction="I" type="String" storage="Bat" />
+     <param name="Ueipv6Low"  direction="O" type="Long"   storage="Bat" />
+     <param name="Ueipv6High" direction="O" type="Long"   storage="Bat" />
+     <param name="Ueipv6Inet4" direction="O" type="Long"   storage="Bat" />
+   </function>
+  </rule>
+  <rule>
+   <function name="StringLength">
+     <param name="MccMncLen" direction="O" type="Int"    storage="Local" />
+     <param name="MCCMNC"    direction="I" type="String" storage="Bat" />
+   </function>
+  </rule>
+  <rule condition="MccMncLen==6">
+   <!--  if len == 6  -->
+   <function name="AssignValue" condition="true">
+     <param name="MncLen" direction="O" type="Int" storage="Local" />
+     <param               direction="I" type="Int" storage="Value">3</param>
+   </function>
+   <!--  Else -->
+   <function name="AssignValue" condition="false">
+     <param name="MncLen" direction="O" type="Int" storage="Local" />
+     <param               direction="I" type="Int" storage="Value">2</param>
+   </function>
+  </rule>
+  <rule>
+   <function name="StringSlice">
+     <param name="MCCMNC" direction="I" type="Int"    storage="Bat" />
+     <param               direction="I" type="Int"    storage="Value">3</param>
+     <param name="MncLen" direction="I" type="Int"    storage="Local" />
+     <param name="Mcc"      direction="O" type="Int"    storage="Bat" />
+     <param name="Mnc"      direction="O" type="Int"    storage="Bat" />
+   </function>
+   <function name="StringSlice">
+     <param name="CGI"     direction="I" type="Int"    storage="Bat" />
+     <param                direction="I" type="Int"    storage="Value">3</param>
+     <param name="MncLen"  direction="I" type="Int"    storage="Local" />
+     <param                direction="I" type="Int"    storage="Value">5</param>
+     <param                direction="I" type="Int"    storage="Value">16</param>
+     <param name="Cgi_Mcc" direction="O" type="Int"    storage="Bat" />
+     <param name="Cgi_Mnc" direction="O" type="Int"    storage="Bat" />
+     <param name="Cgi_Lac" direction="O" type="Int"    storage="Bat" />
+     <param name="Cgi_CI"  direction="O" type="Long"   storage="Bat" />
+   </function>
+  </rule>
+ </code>
+</logic>
+
+     
